@@ -32,6 +32,17 @@ struct 物理层 {
     static let 地面: UInt32   = 0b100  // 4
 }
 
+public extension Float {
+    /// SwiftRandom extension
+    public static func random(lower: Float = 0, upper: Float = 100) -> Float {
+        return (Float(arc4random()) / 0xFFFFFFFF) * (upper - lower) + lower
+    }
+}
+
+extension CGFloat {
+    var degreesToRadians: CGFloat { return self * .pi / 180 }
+    var radiansToDegrees: CGFloat { return self * 180 / .pi }
+}
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
@@ -78,10 +89,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let 砰的音效 = SKAction.playSoundFileNamed("pop.wav", waitForCompletion: false)
     let 得分的音效 = SKAction.playSoundFileNamed("coin.wav", waitForCompletion: false)
     
+    
     override func didMove(to view: SKView) {
         
         // 关掉重力
-        physicsWorld.gravity = CGVector(0, 0)
+        physicsWorld.gravity = CGVector(dx:0, dy:0)
         // 设置碰撞代理
         physicsWorld.contactDelegate = self
         
@@ -172,10 +184,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             角色贴图组.append(SKTexture(imageNamed: "Bird\(i)"))
         }
         
-        for i in (k角色动画总帧数-1).stride(from: 0, through: 0, by: -1) {
-            角色贴图组.append(SKTexture(imageNamed: "Bird\(i)"))
-        }
-        
         let 扇动翅膀的动画 = SKAction.animate(with: 角色贴图组, timePerFrame: 0.07)
         主角.run(SKAction.repeatForever(扇动翅膀的动画))
         
@@ -194,7 +202,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let 左下 = CGPoint(x: 0, y: 游戏区域起始点)
         let 右下 = CGPoint(x: size.width, y: 游戏区域起始点)
         
-        self.physicsBody = SKPhysicsBody(edgeFrom: 左下, toPoint: 右下)
+        self.physicsBody = SKPhysicsBody(edgeFrom: 左下, to: 右下)
         self.physicsBody?.categoryBitMask = 物理层.地面
         self.physicsBody?.collisionBitMask = 0
         self.physicsBody?.contactTestBitMask = 物理层.游戏角色
@@ -210,13 +218,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let path = CGMutablePath()
         
-        CGPathMoveToPoint(path, nil, 3 - offsetX, 12 - offsetY)
-        CGPathAddLineToPoint(path, nil, 18 - offsetX, 22 - offsetY)
-        CGPathAddLineToPoint(path, nil, 28 - offsetX, 27 - offsetY)
-        CGPathAddLineToPoint(path, nil, 39 - offsetX, 23 - offsetY)
-        CGPathAddLineToPoint(path, nil, 39 - offsetX, 9 - offsetY)
-        CGPathAddLineToPoint(path, nil, 25 - offsetX, 4 - offsetY)
-        CGPathAddLineToPoint(path, nil, 5 - offsetX, 2 - offsetY)
+        path.move(to: CGPoint(x: 3 - offsetX, y: 12 - offsetY))
+        path.move(to: CGPoint(x: 18 - offsetX, y: 22 - offsetY))
+        path.move(to: CGPoint(x: 28 - offsetX, y: 27 - offsetY))
+        path.move(to: CGPoint(x: 39 - offsetX, y: 23 - offsetY))
+        path.move(to: CGPoint(x: 39 - offsetX, y: 9 - offsetY))
+        path.move(to: CGPoint(x: 25 - offsetX, y: 4 - offsetY))
+        path.move(to: CGPoint(x: 5 - offsetX, y: 2 - offsetY))
         
         path.closeSubpath()
         
@@ -361,10 +369,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let path = CGMutablePath()
         
-        CGPathMoveToPoint(path, nil, 4 - offsetX, 0 - offsetY)
-        CGPathAddLineToPoint(path, nil, 7 - offsetX, 307 - offsetY)
-        CGPathAddLineToPoint(path, nil, 47 - offsetX, 308 - offsetY)
-        CGPathAddLineToPoint(path, nil, 48 - offsetX, 1 - offsetY)
+        
+        path.move(to: CGPoint(x: 4 - offsetX, y: 0 - offsetY))
+        path.move(to: CGPoint(x: 7 - offsetX, y: 307 - offsetY))
+        path.move(to: CGPoint(x: 47 - offsetX, y: 308 - offsetY))
+        path.move(to: CGPoint(x: 48 - offsetX, y: 1 - offsetY))
         
         path.closeSubpath()
         
@@ -383,12 +392,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let Y坐标最小值 = (游戏区域起始点 - 底部障碍.size.height/2) + 游戏区域的高度 * k底部障碍最小乘数
         let Y坐标最大值 = (游戏区域起始点 - 底部障碍.size.height/2) + 游戏区域的高度 * k底部障碍最大乘数
-        底部障碍.position = CGPointMake(起始X坐标, CGFloat.random(min: Y坐标最小值, max: Y坐标最大值))
+        底部障碍.position = CGPoint(x: 起始X坐标, y: CGFloat(Float.random(lower: Float(Y坐标最小值), upper: Float(Y坐标最大值))))
         底部障碍.name = "底部障碍"
         世界单位.addChild(底部障碍)
         
         let 顶部障碍 = 创建障碍物(图片名: "CactusTop")
-        顶部障碍.zRotation = CGFloat(180).degreesToRadians()
+        顶部障碍.zRotation = CGFloat(180).degreesToRadians
         顶部障碍.position = CGPoint(x: 起始X坐标, y: 底部障碍.position.y + 底部障碍.size.height/2 + 顶部障碍.size.height/2 + 主角.size.height * k缺口乘数)
         顶部障碍.name = "顶部障碍"
         世界单位.addChild(顶部障碍)
@@ -397,11 +406,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let 移动持续时间 = X轴移动距离 / k地面移动速度
         
         let 移动的动作队列 = SKAction.sequence([
-                SKAction.moveByX(X轴移动距离, y: 0, duration: NSTimeInterval(移动持续时间)),
+                SKAction.moveBy(x: X轴移动距离, y: 0, duration: TimeInterval(移动持续时间)),
                 SKAction.removeFromParent()
             ])
-        顶部障碍.runAction(移动的动作队列)
-        底部障碍.runAction(移动的动作队列)
+        顶部障碍.run(移动的动作队列)
+        底部障碍.run(移动的动作队列)
         
     }
     
@@ -510,8 +519,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func 更新主角() {
         let 加速度 = CGPoint(x: 0, y: k重力)
-        速度 = 速度 + 加速度 * CGFloat(dt)
-        主角.position = 主角.position + 速度 * CGFloat(dt)
+        速度 = CGPoint(x: 0, y: 速度.y + 加速度.y * CGFloat(dt))
+        主角.position = CGPoint(x: 主角.position.x, y: 主角.position.y + 速度.y * CGFloat(dt))
         
         // 检测撞击地面时让其停在地面上
         if 主角.position.y - 主角.size.height/2 < 游戏区域起始点 {
@@ -522,11 +531,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func 更新前景() {
         世界单位.enumerateChildNodes(withName: "前景") { 匹配单位, _ in
             if let 前景 = 匹配单位 as? SKSpriteNode {
-                let 地面移动速度 = CGPoint(x: self.k地面移动速度, y: 0)
-                前景.position += 地面移动速度 * CGFloat(self.dt)
+                前景.position = CGPoint(x: 前景.position.x + self.k地面移动速度 * CGFloat(self.dt), y: 0)
                 
                 if 前景.position.x < -前景.size.width {
-                    前景.position += CGPoint(x: 前景.size.width * CGFloat(self.k前景地面数), y: 0)
+                前景.position = CGPoint(x: 前景.position.x + 前景.size.width * CGFloat(self.k前景地面数), y: 0)
                 }
                 
             }
@@ -544,7 +552,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if 撞击了地面 {
             撞击了地面 = false
             速度 = CGPoint.zero
-            主角.zRotation = CGFloat(-90) / 180 .* M_PI
+            主角.zRotation = CGFloat(-90).degreesToRadians
             主角.position = CGPoint(x: 主角.position.x, y: 游戏区域起始点 + 主角.size.width/2)
             run(撞击地面的音效)
             切换到显示分数状态()

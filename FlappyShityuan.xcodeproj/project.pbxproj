@@ -534,6 +534,7 @@
 				13E48DE01EF1A22F004A512D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		13E48DE11EF1A22F004A512D /* Build configuration list for PBXNativeTarget "FlappyShityuanTests" */ = {
 			isa = XCConfigurationList;
@@ -542,6 +543,7 @@
 				13E48DE31EF1A22F004A512D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		13E48DE41EF1A22F004A512D /* Build configuration list for PBXNativeTarget "FlappyShityuanUITests" */ = {
 			isa = XCConfigurationList;
@@ -550,6 +552,7 @@
 				13E48DE61EF1A22F004A512D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
